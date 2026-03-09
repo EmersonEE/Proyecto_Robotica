@@ -1,24 +1,21 @@
+#include "Arduino.h"
+#include "data.h"
+#include "esp32-hal-gpio.h"
 #include <AccelStepper.h>
 #include <MultiStepper.h>
 #include <PubSubClient.h>
 #include <WiFi.h>
-const char *ssid = "CLARO_h9hU3j";
-const char *password = "7474FB19FD";
-const char *mqtt_server = "192.168.1.136";
-const char *topic_sub = "/suscribirse";
-const char *topic_pub = "/saludo";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-const int pasosPorRevolucion = 1600;
-
-AccelStepper m1(1, 22, 21);
-AccelStepper m2(1, 19, 18);
-AccelStepper m3(1, 5, 17);
-AccelStepper m4(1, 16, 4);
-AccelStepper m5(1, 32, 33);
-AccelStepper m6(1, 25, 26);
+// STEP, DIR
+AccelStepper m1(1, STEP_M1, DIR_M1);
+AccelStepper m2(1, STEP_M2, DIR_M2);
+AccelStepper m3(1, STEP_M3, DIR_M3);
+AccelStepper m4(1, STEP_M4, DIR_M4);
+AccelStepper m5(1, STEP_M5, DIR_M5);
+AccelStepper m6(1, STEP_M6, DIR_M6);
 
 MultiStepper grupo;
 float posicionActual[6] = {0, 0, 0, 0, 0, 0};
@@ -111,6 +108,21 @@ void callback(char *topic, byte *payload, unsigned int length) {
   for (int i = 0; i < length; i++)
     mensaje += (char)payload[i];
 
+  if (String(topic) == topic_electroiman) {
+
+    if (mensaje == "1") {
+      digitalWrite(ELECTROIMAN, HIGH);
+      Serial.println("Electroiman ENCENDIDO");
+    }
+
+    if (mensaje == "0") {
+      digitalWrite(ELECTROIMAN, LOW);
+      Serial.println("Electroiman APAGADO");
+    }
+
+    return;
+  }
+
   procesarMensaje(mensaje);
 }
 
@@ -138,6 +150,7 @@ void reconnect() {
       Serial.println("MQTT conectado");
 
       client.subscribe(topic_sub);
+      client.subscribe(topic_electroiman);
 
       client.publish(topic_pub, "ESP32 conectado");
     } else {
@@ -154,9 +167,7 @@ void setup() {
 
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
-  pinMode(23, OUTPUT);
-  digitalWrite(23, LOW);
-
+  pinMode(ELECTROIMAN, OUTPUT);
   m1.setMaxSpeed(2000);
   m2.setMaxSpeed(2000);
   m3.setMaxSpeed(2000);
