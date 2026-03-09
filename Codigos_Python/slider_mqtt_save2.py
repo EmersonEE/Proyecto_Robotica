@@ -9,13 +9,15 @@ broker = "192.168.1.136"
 port = 1883
 topic_pub = "/suscribirse"
 topic_sub = "/saludo"
-
+topic_electro = "/electroiman"
+electroiman_encendido = False
 client = mqtt.Client()
 
 
 def on_connect(client, userdata, flags, rc):
     print("MQTT conectado")
     client.subscribe(topic_sub)
+    client.subscribe(topic_electro)
 
 
 def on_message(client, userdata, msg):
@@ -48,6 +50,14 @@ def enviar_mqtt(mensaje):
 
     print("TX:", mensaje)
     client.publish(topic_pub, mensaje)
+
+
+def activar_electroiman(valor):
+    if not mqtt_ok:
+        print("MQTT no conectado")
+        return
+
+    client.publish(topic_electro, valor)
 
 
 def leer_sliders():
@@ -83,6 +93,17 @@ def guardar_pose():
     lista.insert(tk.END, pose)
 
 
+def electroiman_fun():
+    global electroiman_encendido
+
+    if not electroiman_encendido:
+        activar_electroiman(1)
+        electroiman_encendido = True
+    else:
+        activar_electroiman(0)
+        electroiman_encendido = False
+
+
 def eliminar_pose():
     seleccion = lista.curselection()
 
@@ -95,6 +116,10 @@ def eliminar_pose():
     trayectoria.pop(index)
 
 
+def es_home(pose):
+    return pose == [0, 0, 0, 0, 0, 0]
+
+
 def ejecutar_trayectoria():
     if len(trayectoria) == 0:
         messagebox.showwarning("Vacío", "No hay poses")
@@ -102,8 +127,21 @@ def ejecutar_trayectoria():
 
     delay = float(entry_delay.get())
 
+    movimiento = 0
+
     for pose in trayectoria:
         enviar_pose(pose)
+
+        if not es_home(pose):
+            movimiento += 1
+
+            if movimiento == 1:
+                activar_electroiman(1)
+                print("Electroiman ON")
+
+            elif movimiento == 2:
+                activar_electroiman(0)
+                print("Electroiman OFF")
 
         ventana.update()
         time.sleep(delay)
@@ -137,6 +175,7 @@ def guardar_archivo():
             json.dump(trayectoria, f)
 
         print("Trayectoria guardada")
+        limpiar_trayectoria()
 
 
 def cargar_archivo():
@@ -239,6 +278,10 @@ tk.Button(frame_botones, text="Limpiar Trayectoria", command=limpiar_trayectoria
     row=0, column=4
 )
 tk.Label(text="Trayectoria").pack()
+
+tk.Button(frame_archivo, text="Electroiman", command=electroiman_fun).grid(
+    row=0, column=3
+)
 
 lista = tk.Listbox(ventana, width=60)
 lista.pack()
