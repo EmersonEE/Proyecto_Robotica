@@ -4548,7 +4548,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Capacitor_THT_AKL:CP_Radial_D8.0mm_P3.80mm"
+		(property "Footprint" "PCM_Capacitor_THT_AKL:CP_Radial_D6.3mm_P2.50mm"
 			(at 87.63 109.22 0)
 			(effects
 				(font
@@ -4895,7 +4895,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Capacitor_THT_AKL:CP_Radial_D8.0mm_P3.80mm"
+		(property "Footprint" "PCM_Capacitor_THT_AKL:CP_Radial_D6.3mm_P2.50mm"
 			(at 97.79 36.83 0)
 			(effects
 				(font
@@ -4965,7 +4965,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Capacitor_THT_AKL:CP_Radial_D8.0mm_P3.80mm"
+		(property "Footprint" "PCM_Capacitor_THT_AKL:CP_Radial_D6.3mm_P2.50mm"
 			(at 187.96 109.22 0)
 			(effects
 				(font

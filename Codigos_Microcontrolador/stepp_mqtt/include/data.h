@@ -9,6 +9,8 @@ const char *topic_electroiman = "/electroiman";
 
 const int pasosPorRevolucion = 1600;
 
+const int pasosPorRevolucionDriver = 3200;
+
 // Pinea para los motores STEP-DIR
 #define STEP_M1 27
 #define DIR_M1 14
@@ -19,14 +21,14 @@ const int pasosPorRevolucion = 1600;
 #define STEP_M3 32
 #define DIR_M3 33
 
-#define STEP_M4 16
-#define DIR_M4 4
+#define STEP_M4 4
+#define DIR_M4 16
 
-#define STEP_M5 18
-#define DIR_M5 17
+#define STEP_M5 17
+#define DIR_M5 18
 
-#define STEP_M6 23
-#define DIR_M6 19
+#define STEP_M6 19
+#define DIR_M6 23
 
 // Pin electroiman
 #define ELECTROIMAN 13

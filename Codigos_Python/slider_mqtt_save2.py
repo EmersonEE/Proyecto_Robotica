@@ -122,7 +122,7 @@ def es_home(pose):
 
 def ejecutar_trayectoria():
     if len(trayectoria) == 0:
-        messagebox.showwarning("Vacío", "No hay poses")
+        messagebox.showwarning("Vacio", "No hay poses para enviar")
         return
 
     delay = float(entry_delay.get())
@@ -231,8 +231,8 @@ for i in range(6):
 
     s = tk.Scale(
         ventana,
-        from_=-180,
-        to=180,
+        from_=-360,
+        to=360,
         resolution=5,
         orient=tk.HORIZONTAL,
         length=400,
@@ -292,7 +292,7 @@ frame_delay.pack(pady=10)
 tk.Label(frame_delay, text="Delay entre poses (s)").grid(row=0, column=0)
 
 entry_delay = tk.Entry(frame_delay)
-entry_delay.insert(0, "1")
+entry_delay.insert(0, "2.5")
 entry_delay.grid(row=0, column=1)
 
 ventana.mainloop()
