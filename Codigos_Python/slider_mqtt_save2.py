@@ -13,9 +13,11 @@ topic_electro = "/electroiman"
 electroiman_encendido = False
 client = mqtt.Client()
 
+home = [0, 135, 0, 190, 155, 0]
+
 
 def on_connect(client, userdata, flags, rc):
-    print("MQTT conectado")
+    print("")
     client.subscribe(topic_sub)
     client.subscribe(topic_electro)
 
@@ -181,7 +183,6 @@ def guardar_archivo():
 
 def cargar_archivo():
     global trayectoria
-
     archivo = filedialog.askopenfilename(
         initialdir=carpeta,
         filetypes=[("JSON", "*.json")],
@@ -198,11 +199,19 @@ def cargar_archivo():
     for pose in trayectoria:
         lista.insert(tk.END, pose)
 
+    # --- NUEVA LÓGICA DE SINCRONIZACIÓN ---
+    if len(trayectoria) > 0:
+        primera_pose = trayectoria[0]
+        actualizar_interfaz_y_robot(primera_pose)
+        print(f"Sliders sincronizados con la primera pose: {primera_pose}")
 
-def slider_release(event, motor):
-    valor = event.widget.get()
 
-    enviar_mqtt(f"M{motor}:{valor}")
+def actualizar_interfaz_y_robot(pose):
+    """Actualiza los 6 sliders y envía la pose al robot"""
+    for i in range(6):
+        sliders[i].set(pose[i])  # Actualiza el slider visualmente
+
+    enviar_pose(pose)  # Envía el comando P:g1,g2... al ESP32
 
 
 def limpiar_trayectoria():
@@ -269,19 +278,22 @@ for i in range(6):
 slider1, slider2, slider3, slider4, slider5, slider6 = sliders
 
 
-def ajustar_slider(motor_num, delta):
-    slider = sliders[motor_num - 1]
-    valor_actual = slider.get()
-    nuevo_valor = valor_actual + delta
+def actualizar_y_enviar(motor_num, nuevo_valor):
+    nuevo_valor = max(-360, min(360, nuevo_valor))
 
-    if nuevo_valor < -360:
-        nuevo_valor = -360
-    elif nuevo_valor > 360:
-        nuevo_valor = 360
-
-    slider.set(nuevo_valor)
+    sliders[motor_num - 1].set(nuevo_valor)
 
     enviar_mqtt(f"M{motor_num}:{nuevo_valor}")
+
+
+def ajustar_slider(motor_num, delta):
+    valor_actual = sliders[motor_num - 1].get()
+    actualizar_y_enviar(motor_num, valor_actual + delta)
+
+
+def slider_release(event, motor_num):
+    valor = event.widget.get()
+    actualizar_y_enviar(motor_num, valor)
 
 
 frame_botones = tk.Frame(ventana)
@@ -323,6 +335,20 @@ tk.Button(frame_archivo, text="Electroiman", command=electroiman_fun).grid(
 lista = tk.Listbox(ventana, width=60)
 lista.pack()
 
+
+def al_seleccionar_lista(event):
+    seleccion = lista.curselection()
+    if not seleccion:
+        return
+
+    index = seleccion[0]
+    pose_seleccionada = trayectoria[index]
+
+    actualizar_interfaz_y_robot(pose_seleccionada)
+
+
+lista.bind("<<ListboxSelect>>", al_seleccionar_lista)
+
 frame_delay = tk.Frame(ventana)
 frame_delay.pack(pady=10)
 
@@ -331,5 +357,7 @@ tk.Label(frame_delay, text="Delay entre poses (s)").grid(row=0, column=0)
 entry_delay = tk.Entry(frame_delay)
 entry_delay.insert(0, "4")
 entry_delay.grid(row=0, column=1)
-
+for s in sliders:
+    s.set(0)
+trayectoria = []
 ventana.mainloop()

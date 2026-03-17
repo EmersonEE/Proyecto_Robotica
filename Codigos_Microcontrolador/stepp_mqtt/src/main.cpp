@@ -21,22 +21,41 @@ long gradosAPasos(float grados, int motor) {
   return lround(grados * stepsPerDegree[motor]);
 }
 
-void moverPose(float g1, float g2, float g3, float g4, float g5, float g6) {
+void moverPose(float g1, float g2, float g3, float g4, float g5, float g6,
+               bool moveAll) {
   float g[6] = {g1, g2, g3, g4, g5, g6};
 
-  for (int i = 0; i < 6; i++) {
-    long pasos = gradosAPasos(g[i], i);
+  if (moveAll) {
+    for (int i = 0; i < 6; i++) {
+      long pasos = gradosAPasos(g[i], i);
+      if (i == 4 || i == 3)
+        pasos = -pasos;
+      motors[i]->moveTo(pasos);
+    }
+  } else {
+    for (int j = 0; j < 6; j++) {
+      int i = ordenMotores[j];
+      long pasos = gradosAPasos(g[i], i);
+      if (i == 4 || i == 3)
+        pasos = -pasos;
 
-    if (i == 4)
-      pasos = -pasos;
+      motors[i]->moveTo(pasos);
 
-    if (i == 3)
-      pasos = -pasos;
+      while (motors[i]->distanceToGo() != 0) {
+        motors[i]->run();
+        client.loop();
+      }
 
-    motors[i]->moveTo(pasos);
+      Serial.print("Motor ");
+      Serial.print(i + 1);
+      Serial.println(" en posicion.");
+
+      if (j < 5) {
+        delay(DELAY_ENTRE_MOTORES);
+      }
+    }
   }
 }
-
 void moverMotor(int motor, float grados) {
   int idx = motor - 1;
 
@@ -79,7 +98,7 @@ void procesarMensaje(String msg) {
     }
 
     moverPose(valores[0], valores[1], valores[2], valores[3], valores[4],
-              valores[5]);
+              valores[5], false);
   }
 }
 
@@ -158,8 +177,21 @@ void setup() {
   m4.setMinPulseWidth(5);
   m5.setMinPulseWidth(5);
   m6.setMinPulseWidth(5);
-  delay(500);
-  moverPose(0, 135, 0, 190, 155, 0);
+  moverPose(0, 135, 0, 190, 155, 0, true);
+
+  bool moviendo = true;
+  while (moviendo) {
+    moviendo = false;
+    for (int i = 0; i < 6; i++) {
+      if (motors[i]->distanceToGo() != 0) {
+        motors[i]->run();
+        moviendo = true;
+      }
+    }
+  }
+  for (int i = 0; i < 6; i++) {
+    motors[i]->setCurrentPosition(0);
+  }
 }
 
 void loop() {
