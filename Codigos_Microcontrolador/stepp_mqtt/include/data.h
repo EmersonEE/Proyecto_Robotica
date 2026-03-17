@@ -2,16 +2,12 @@
 
 const char *ssid = "CLARO_h9hU3j";
 const char *password = "7474FB19FD";
+
 const char *mqtt_server = "192.168.1.136";
 const char *topic_sub = "/suscribirse";
 const char *topic_pub = "/saludo";
 const char *topic_electroiman = "/electroiman";
 
-const int pasosPorRevolucion = 1600;
-
-const int pasosPorRevolucionDriver = 3200;
-
-// Pinea para los motores STEP-DIR
 #define STEP_M1 27
 #define DIR_M1 14
 
@@ -30,5 +26,10 @@ const int pasosPorRevolucionDriver = 3200;
 #define STEP_M6 19
 #define DIR_M6 23
 
-// Pin electroiman
 #define ELECTROIMAN 13
+
+const long stepsPerRev[6] = {1600, 1600, 1600, 1600, 3200, 3200};
+
+float stepsPerDegree[6];
+
+float posicionActual[6] = {0, 0, 0, 0, 0, 0};

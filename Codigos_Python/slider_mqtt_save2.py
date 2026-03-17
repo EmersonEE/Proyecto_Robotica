@@ -117,7 +117,8 @@ def eliminar_pose():
 
 
 def es_home(pose):
-    return pose == [0, 0, 0, 0, 0, 0]
+    # return pose == [0, 0, 0, 0, 0, 0]
+    return
 
 
 def ejecutar_trayectoria():
@@ -132,16 +133,16 @@ def ejecutar_trayectoria():
     for pose in trayectoria:
         enviar_pose(pose)
 
-        if not es_home(pose):
-            movimiento += 1
+        #   if not es_home(pose):
+        #       movimiento += 1
 
-            if movimiento == 1:
-                activar_electroiman(1)
-                print("Electroiman ON")
+        #       if movimiento == 1:
+        #           activar_electroiman(1)
+        #           print("Electroiman ON")
 
-            elif movimiento == 2:
-                activar_electroiman(0)
-                print("Electroiman OFF")
+        #       elif movimiento == 2:
+        #           activar_electroiman(0)
+        #           print("Electroiman OFF")
 
         ventana.update()
         time.sleep(delay)
@@ -225,27 +226,63 @@ ventana.title("Control Brazo Robótico Profesional")
 ventana.geometry("600x600")
 
 sliders = []
+botones_mas = []
+botones_menos = []
+grados_boton = 3
 
 for i in range(6):
-    tk.Label(ventana, text=f"Motor {i + 1}").pack()
+    frame_motor = tk.Frame(ventana)
+    frame_motor.pack(pady=4, padx=10, fill="x")
+
+    tk.Label(frame_motor, text=f"Motor {i + 1}", width=10, anchor="w").pack(
+        side=tk.LEFT
+    )
+
+    btn_menos = tk.Button(
+        frame_motor, text="-5", width=4, command=lambda m=i + 1: ajustar_slider(m, -5)
+    )
+    btn_menos.pack(side=tk.LEFT, padx=(0, 4))
 
     s = tk.Scale(
-        ventana,
+        frame_motor,
         from_=-360,
         to=360,
         resolution=5,
         orient=tk.HORIZONTAL,
-        length=400,
+        length=340,
+        showvalue=True,
     )
-
     s.set(0)
-    s.pack()
+    s.pack(side=tk.LEFT, fill="x", expand=True)
 
-    s.bind("<ButtonRelease-1>", lambda e, m=i + 1: slider_release(e, m))
+    btn_mas = tk.Button(
+        frame_motor, text="+5", width=4, command=lambda m=i + 1: ajustar_slider(m, +5)
+    )
+    btn_mas.pack(side=tk.LEFT, padx=(4, 0))
+
+    s.bind("<ButtonRelease-1>", lambda e, mot=i + 1: slider_release(e, mot))
 
     sliders.append(s)
+    botones_menos.append(btn_menos)
+    botones_mas.append(btn_mas)
 
 slider1, slider2, slider3, slider4, slider5, slider6 = sliders
+
+
+def ajustar_slider(motor_num, delta):
+    slider = sliders[motor_num - 1]
+    valor_actual = slider.get()
+    nuevo_valor = valor_actual + delta
+
+    if nuevo_valor < -360:
+        nuevo_valor = -360
+    elif nuevo_valor > 360:
+        nuevo_valor = 360
+
+    slider.set(nuevo_valor)
+
+    enviar_mqtt(f"M{motor_num}:{nuevo_valor}")
+
 
 frame_botones = tk.Frame(ventana)
 frame_botones.pack(pady=10)
@@ -292,7 +329,7 @@ frame_delay.pack(pady=10)
 tk.Label(frame_delay, text="Delay entre poses (s)").grid(row=0, column=0)
 
 entry_delay = tk.Entry(frame_delay)
-entry_delay.insert(0, "2.5")
+entry_delay.insert(0, "4")
 entry_delay.grid(row=0, column=1)
 
 ventana.mainloop()

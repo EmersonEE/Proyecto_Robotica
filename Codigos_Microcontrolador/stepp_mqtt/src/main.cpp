@@ -1,43 +1,13 @@
+#include "esp32-hal.h"
 #include <AccelStepper.h>
 #include <Arduino.h>
 #include <PubSubClient.h>
 #include <WiFi.h>
-
-// WIFI
-const char *ssid = "CLARO_h9hU3j";
-const char *password = "7474FB19FD";
-
-// MQTT
-const char *mqtt_server = "192.168.1.136";
-const char *topic_sub = "/suscribirse";
-const char *topic_pub = "/saludo";
-const char *topic_electroiman = "/electroiman";
-
-// STEP DIR
-#define STEP_M1 27
-#define DIR_M1 14
-
-#define STEP_M2 25
-#define DIR_M2 26
-
-#define STEP_M3 32
-#define DIR_M3 33
-
-#define STEP_M4 4
-#define DIR_M4 16
-
-#define STEP_M5 17
-#define DIR_M5 18
-
-#define STEP_M6 19
-#define DIR_M6 23
-
-#define ELECTROIMAN 13
+#include <data.h>
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-// Motores
 AccelStepper m1(1, STEP_M1, DIR_M1);
 AccelStepper m2(1, STEP_M2, DIR_M2);
 AccelStepper m3(1, STEP_M3, DIR_M3);
@@ -47,15 +17,6 @@ AccelStepper m6(1, STEP_M6, DIR_M6);
 
 AccelStepper *motors[6] = {&m1, &m2, &m3, &m4, &m5, &m6};
 
-// pasos por revolución
-const long stepsPerRev[6] = {1600, 1600, 1600, 3200, 3200, 3200};
-
-// pasos por grado (optimización)
-float stepsPerDegree[6];
-
-float posicionActual[6] = {0, 0, 0, 0, 0, 0};
-
-// convertir grados a pasos
 long gradosAPasos(float grados, int motor) {
   return lround(grados * stepsPerDegree[motor]);
 }
@@ -194,10 +155,11 @@ void setup() {
     motors[i]->setAcceleration(800);
   }
 
-  // requerido para TB6600
   m4.setMinPulseWidth(5);
   m5.setMinPulseWidth(5);
   m6.setMinPulseWidth(5);
+  delay(500);
+  moverPose(0, 135, 0, 190, 155, 0);
 }
 
 void loop() {
