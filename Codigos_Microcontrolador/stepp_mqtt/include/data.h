@@ -28,9 +28,10 @@ const char *topic_electroiman = "/electroiman";
 
 #define ELECTROIMAN 13
 
-int ordenMotores[6] = {5, 1, 3, 4, 2, 0};
-const int DELAY_ENTRE_MOTORES = 100;
-const long stepsPerRev[6] = {1600, 1600, 1600, 1600, 3200, 3200};
+// int ordenMotores[6] = {5, 4, 3, 1, 2, 0};
+int ordenMotores[6] = {4, 3, 1, 5, 2, 0};
+const int DELAY_ENTRE_MOTORES = 20;
+const long stepsPerRev[6] = {1600, 1600, 1600, 6400, 3200, 3200};
 
 float stepsPerDegree[6];
 
