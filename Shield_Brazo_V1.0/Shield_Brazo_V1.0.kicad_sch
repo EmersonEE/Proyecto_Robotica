@@ -1,7 +1,7 @@
 (kicad_sch
-	(version 20250114)
+	(version 20260306)
 	(generator "eeschema")
-	(generator_version "9.0")
+	(generator_version "10.0")
 	(uuid "cc5c8cee-7220-4c4d-b75d-31b517ddc483")
 	(paper "A4")
 	(lib_symbols)
@@ -188,11 +188,13 @@
 			(type solid)
 		)
 		(fill
-			(color 0 0 0 0.0000)
+			(color 0 0 0 0)
 		)
 		(uuid "38be2c40-1a1c-4db6-b1e5-8eb7da598efe")
 		(property "Sheetname" "MCU"
 			(at 86.36 69.1384 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -202,6 +204,8 @@
 		)
 		(property "Sheetfile" "MCU.kicad_sch"
 			(at 86.36 145.3646 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -400,11 +404,13 @@
 			(type solid)
 		)
 		(fill
-			(color 0 0 0 0.0000)
+			(color 0 0 0 0)
 		)
 		(uuid "3bdac36e-f732-4ae5-a15e-eba1537a2210")
 		(property "Sheetname" "Power"
 			(at 93.98 48.8184 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -414,6 +420,8 @@
 		)
 		(property "Sheetfile" "Power.kicad_sch"
 			(at 93.98 62.8146 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -442,11 +450,13 @@
 			(type solid)
 		)
 		(fill
-			(color 0 0 0 0.0000)
+			(color 0 0 0 0)
 		)
 		(uuid "3cd29ae9-4ef9-4231-b3ea-044b4ed2d6de")
 		(property "Sheetname" "Pinout"
 			(at 133.35 126.2884 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -456,6 +466,8 @@
 		)
 		(property "Sheetfile" "Pinout.kicad_sch"
 			(at 133.35 142.8246 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -524,11 +536,13 @@
 			(type solid)
 		)
 		(fill
-			(color 0 0 0 0.0000)
+			(color 0 0 0 0)
 		)
 		(uuid "4b209789-d5aa-48ef-90f9-9c9c93b012c1")
 		(property "Sheetname" "Drivers"
 			(at 133.35 69.1384 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -538,6 +552,8 @@
 		)
 		(property "Sheetfile" "Drivers.kicad_sch"
 			(at 133.35 109.8046 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -686,11 +702,13 @@
 			(type solid)
 		)
 		(fill
-			(color 0 0 0 0.0000)
+			(color 0 0 0 0)
 		)
 		(uuid "f6e913c5-eff6-4af7-b0a1-d2c3f38a65c0")
 		(property "Sheetname" "Outputs"
 			(at 133.35 114.8584 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -700,6 +718,8 @@
 		)
 		(property "Sheetfile" "untitled.kicad_sch"
 			(at 133.35 121.2346 0)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
