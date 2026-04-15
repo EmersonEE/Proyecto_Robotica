@@ -12,7 +12,7 @@ topic_sub = "/saludo"
 topic_electro = "/electroiman"
 electroiman_encendido = False
 client = mqtt.Client()
-
+robot_listo = False
 home = [0, 135, 0, 190, 155, 0]
 
 
@@ -20,10 +20,17 @@ def on_connect(client, userdata, flags, rc):
     print("")
     client.subscribe(topic_sub)
     client.subscribe(topic_electro)
+    client.subscribe("/estado")
 
 
 def on_message(client, userdata, msg):
-    print("ESP32:", msg.payload.decode())
+    global robot_listo
+
+    payload = msg.payload.decode()
+    print("ESP32:", payload)
+
+    if msg.topic == "/estado" and payload == "DONE":
+        robot_listo = True
 
 
 client.on_connect = on_connect
@@ -43,6 +50,14 @@ trayectoria = []
 
 if not os.path.exists(carpeta):
     os.makedirs(carpeta)
+
+
+def esperar_robot():
+    global robot_listo
+    robot_listo = False
+
+    while not robot_listo:
+        time.sleep(0.01)
 
 
 def enviar_mqtt(mensaje):
@@ -128,26 +143,18 @@ def ejecutar_trayectoria():
         messagebox.showwarning("Vacio", "No hay poses para enviar")
         return
 
-    delay = float(entry_delay.get())
-
-    movimiento = 0
-
-    for pose in trayectoria:
+    for i, pose in enumerate(trayectoria):
         enviar_pose(pose)
+        esperar_robot()  # 🔥 sincronización real
 
-        #   if not es_home(pose):
-        #       movimiento += 1
+        # ---- CONTROL ELECTROIMÁN ----
+        if i == 1:  # PICK
+            activar_electroiman(1)
+            print("Electroiman ON")
 
-        #       if movimiento == 1:
-        #           activar_electroiman(1)
-        #           print("Electroiman ON")
-
-        #       elif movimiento == 2:
-        #           activar_electroiman(0)
-        #           print("Electroiman OFF")
-
-        ventana.update()
-        time.sleep(delay)
+        elif i == 3:  # PLACE
+            activar_electroiman(0)
+            print("Electroiman OFF")
 
 
 def limpiar():

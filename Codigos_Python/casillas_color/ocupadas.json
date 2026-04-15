@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-03-27 17:46:33",
+  "total_objetos": 6,
+  "objetos": [
+    {
+      "celda": 1,
+      "color": "AZUL"
+    },
+    {
+      "celda": 2,
+      "color": "AMARILLO"
+    },
+    {
+      "celda": 3,
+      "color": "ROJO"
+    },
+    {
+      "celda": 9,
+      "color": "AMARILLO"
+    },
+    {
+      "celda": 19,
+      "color": "ROJO"
+    },
+    {
+      "celda": 24,
+      "color": "AZUL"
+    }
+  ]
+}

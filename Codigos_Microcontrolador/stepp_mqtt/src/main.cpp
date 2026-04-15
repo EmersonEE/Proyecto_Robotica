@@ -1,13 +1,12 @@
+#include "esp32-hal-gpio.h"
 #include "esp32-hal.h"
 #include <AccelStepper.h>
 #include <Arduino.h>
 #include <PubSubClient.h>
 #include <WiFi.h>
 #include <data.h>
-
 WiFiClient espClient;
 PubSubClient client(espClient);
-
 AccelStepper m1(1, STEP_M1, DIR_M1);
 AccelStepper m2(1, STEP_M2, DIR_M2);
 AccelStepper m3(1, STEP_M3, DIR_M3);
@@ -20,47 +19,20 @@ AccelStepper *motors[6] = {&m1, &m2, &m3, &m4, &m5, &m6};
 long gradosAPasos(float grados, int motor) {
   return lround(grados * stepsPerDegree[motor]);
 }
-// Índices:        5,  1,  3,  4,  2,  0
 
-void moverPose(float g1, float g2, float g3, float g4, float g5, float g6,
-               bool moveAll) {
+void moverPose(float g1, float g2, float g3, float g4, float g5, float g6) {
   float g[6] = {g1, g2, g3, g4, g5, g6};
 
-  if (moveAll) {
-    // MOVIMIENTO SIMULTÁNEO (Todos a la vez)
-    for (int i = 0; i < 6; i++) {
-      long pasos = gradosAPasos(g[i], i);
-      if (i == 4 || i == 3)
-        pasos = -pasos;
-      motors[i]->moveTo(pasos);
-    }
-  } else {
-    // MOVIMIENTO SECUENCIAL PERSONALIZADO
-    for (int j = 0; j < 6; j++) {
-      int i = ordenMotores[j]; // Obtenemos qué motor toca mover según nuestro
-                               // arreglo
+  for (int i = 0; i < 6; i++) {
+    long pasos = gradosAPasos(g[i], i);
 
-      long pasos = gradosAPasos(g[i], i);
-      if (i == 4 || i == 3)
-        pasos = -pasos;
+    if (i == 4 || i == 3)
+      pasos = -pasos;
 
-      motors[i]->moveTo(pasos);
-
-      while (motors[i]->distanceToGo() != 0) {
-        motors[i]->run();
-        client.loop(); // Evita desconexión MQTT
-      }
-
-      Serial.print("Motor ");
-      Serial.print(i + 1);
-      Serial.println(" en posicion.");
-
-      // Delay opcional entre movimientos
-      if (j < 5) {
-        delay(DELAY_ENTRE_MOTORES);
-      }
-    }
+    motors[i]->moveTo(pasos);
   }
+
+  movimientoActivo = true;
 }
 void moverMotor(int motor, float grados) {
   int idx = motor - 1;
@@ -104,7 +76,7 @@ void procesarMensaje(String msg) {
     }
 
     moverPose(valores[0], valores[1], valores[2], valores[3], valores[4],
-              valores[5], true);
+              valores[5]);
   }
 }
 
@@ -127,7 +99,6 @@ void callback(char *topic, byte *payload, unsigned int length) {
 
     return;
   }
-
   procesarMensaje(mensaje);
 }
 
@@ -183,8 +154,8 @@ void setup() {
   m4.setMinPulseWidth(5);
   m5.setMinPulseWidth(5);
   m6.setMinPulseWidth(5);
-  moverPose(0, 135, 0, 190, 155, 0, true);
 
+  moverPose(0, 135, 0, 190, 155, 0);
   bool moviendo = true;
   while (moviendo) {
     moviendo = false;
@@ -206,6 +177,19 @@ void loop() {
 
   client.loop();
 
-  for (int i = 0; i < 6; i++)
-    motors[i]->run();
+  bool alguienMoviendose = false;
+
+  for (int i = 0; i < 6; i++) {
+    if (motors[i]->distanceToGo() != 0) {
+      motors[i]->run();
+      alguienMoviendose = true;
+    }
+  }
+
+  if (movimientoActivo && !alguienMoviendose) {
+    movimientoActivo = false;
+
+    Serial.println("MOVIMIENTO TERMINADO");
+    client.publish("/estado", "DONE");
+  }
 }

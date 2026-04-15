@@ -1,3 +1,4 @@
+#include "sys/_intsup.h"
 #include <Arduino.h>
 
 const char *ssid = "CLARO_h9hU3j";
@@ -7,7 +8,7 @@ const char *mqtt_server = "192.168.1.136";
 const char *topic_sub = "/suscribirse";
 const char *topic_pub = "/saludo";
 const char *topic_electroiman = "/electroiman";
-
+const char *topic_ws2812 = "/ws2812";
 #define STEP_M1 27
 #define DIR_M1 14
 
@@ -27,12 +28,15 @@ const char *topic_electroiman = "/electroiman";
 #define DIR_M6 23
 
 #define ELECTROIMAN 13
+bool robotListo = false;
 
 // int ordenMotores[6] = {5, 4, 3, 1, 2, 0};
 int ordenMotores[6] = {4, 3, 1, 5, 2, 0};
 const int DELAY_ENTRE_MOTORES = 20;
 const long stepsPerRev[6] = {1600, 1600, 1600, 6400, 3200, 3200};
-
+bool movimientoActivo = false;
 float stepsPerDegree[6];
 
 float posicionActual[6] = {0, 0, 0, 0, 0, 0};
+bool ROBOT_LISTO = false;   // Se activará vía MQTT
+bool homeRealizado = false; // Para asegurar que el Home solo ocurra una vez
