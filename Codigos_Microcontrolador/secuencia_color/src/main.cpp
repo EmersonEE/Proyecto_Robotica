@@ -53,7 +53,7 @@ void callback(char *topic, byte *payload, unsigned int length) {
       break;
     case '2':
       cambiarColor(CRGB::Blue);
-      Serial.println("🔵 LED AZUL");
+      Serial.println("🔵 LEDhttps://www.youtube.com/watch?v=aFAQHcRhZFg AZUL");
       break;
     case '3':
       cambiarColor(CRGB::Yellow);

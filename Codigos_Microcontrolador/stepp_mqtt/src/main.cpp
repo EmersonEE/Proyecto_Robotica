@@ -172,6 +172,7 @@ void setup() {
 }
 
 void loop() {
+  bool INICIAR_ROBOT = digitalRead(ROBOT_LISTO);
   if (!client.connected())
     reconnect();
 
