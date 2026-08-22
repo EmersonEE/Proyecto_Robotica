@@ -1,0 +1,28 @@
+{
+  "board_tilt": -12.413793103448285,
+  "board_roll": -90.0,
+  "spin_tilt": -63.103448275862064,
+  "spin_heading": -180.0,
+  "period": 5.0,
+  "direction": "ccw",
+  "lighting": "soft",
+  "bg_color": "#F5F0E8",
+  "render_mode": "both",
+  "format": "mp4",
+  "resolution": "1920x1080",
+  "hide_vias": true,
+  "hide_components": true,
+  "hide_test_points": true,
+  "custom_resolutions": [
+    "1080x1920"
+  ],
+  "preset": "custom",
+  "logging_level": "info",
+  "easing": "linear",
+  "output_auto": false,
+  "output_path": "/home/emerson/V\u00eddeos",
+  "cli_overrides": "",
+  "theme_mode": "system",
+  "params_collapsed": false,
+  "output_collapsed": false
+}
